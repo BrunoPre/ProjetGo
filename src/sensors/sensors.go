@@ -4,25 +4,29 @@ import (
 	"encoding/json"
 	"fmt"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
+	"log"
 	"time"
 )
 
 type Sensor struct {
-	idSensor    int
-	idAirport   int    // IATA format
-	typeMeasure string // temp, wind, pressure
-	valMeasure  float32
-	timestamp   string // format: YYYY-MM-DD-hh-mm-ss
+	idSensor    int     `json:"idSensor"`
+	idAirport   int     `json:"idAirport"`   // IATA format
+	typeMeasure string  `json:"typeMeasure"` // temp, wind, pressure
+	valMeasure  float32 `json:"valMeasure"`
+	timestamp   string  `json:"timestamp"` // format: YYYY-MM-DD-hh-mm-ss
 }
 
-func (s Sensor) String() string {
-	res, _ := json.Marshal(s)
-	return fmt.Sprintf(string(res))
+func (s Sensor) String() string { //TODO: correct the stringer
+	res, err := json.MarshalIndent(s, "", "\t")
+	if err != nil {
+		log.Fatal(err)
+	}
+	return string(res)
 }
 
 func (s Sensor) publishOnce(client mqtt.Client) {
-
 	msg := s.String()
+	fmt.Println(msg)
 	token := client.Publish("sensors/"+s.typeMeasure, 0, false, msg)
 	token.Wait()
 }

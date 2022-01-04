@@ -5,11 +5,25 @@ import (
 	"Project/pkg/mqtt/structs"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"math/rand"
+	"os"
+	"path/filepath"
 	"time"
 )
 
 func main() {
+	if len(os.Args) != 2 {
+		panic("Incorrect arguments lengths. Please provide the path to the config file")
+	}
+	fmt.Println(os.Args)
+
+	fileByte, err := ioutil.ReadFile(filepath.Clean(os.Args[1]))
+	if err != nil {
+		panic(fmt.Sprintf("Couldn't open config file \"%s\"", err))
+	}
+
+	fmt.Println(fileByte)
 
 	client := mqttClient.Connect("localhost:1883", "golang-sub")
 	var sensorData structs.SensorData

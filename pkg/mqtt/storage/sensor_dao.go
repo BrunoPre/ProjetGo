@@ -2,6 +2,10 @@ package storage
 
 import (
 	"Project/pkg/mqtt/structs"
+	"context"
+	"encoding/json"
+	"fmt"
+	"strconv"
 
 	"github.com/go-redis/redis/v8"
 )
@@ -20,5 +24,12 @@ type RedisSensorDao struct {
 }
 
 func (r RedisSensorDao) Write(data structs.SensorData) error {
+	ctx := context.Background()
+	json, err := json.Marshal(data)
+	if err != nil {
+		return fmt.Errorf("Error while unmarshalling the data, %w", err)
+	}
+
+	fmt.Println(r.client.Set(ctx, strconv.Itoa(data.Id), json, 0))
 	return nil
 }

@@ -2,7 +2,6 @@ package sensors
 
 import (
 	"encoding/json"
-	"fmt"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"log"
 	"time"
@@ -26,7 +25,6 @@ func (s Sensor) String() string { //TODO: correct the stringer
 
 func (s Sensor) publishOnce(client mqtt.Client) {
 	msg := s.String()
-	fmt.Println(msg)
 	token := client.Publish("sensors/"+s.typeMeasure, 0, false, msg)
 	token.Wait()
 }

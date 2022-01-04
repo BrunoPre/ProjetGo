@@ -39,5 +39,5 @@ func Connect(brokerURI string, clientId string) mqtt.Client {
 }
 
 func RespondToPub(client mqtt.Client, message mqtt.Message) { // needs client and message to be parameters for Subscribe
-	//fmt.Printf("Received message: %s\n", message.Payload())
+	fmt.Printf("Received message: %s\n", message.Payload())
 }

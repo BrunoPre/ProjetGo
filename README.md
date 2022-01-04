@@ -12,7 +12,7 @@ Project réalisé pour un cours d'architecture distriubée par Justine F, Bruno 
 {
   "measure": {
     "idAirport": "string",
-    "idCaptor": "string",
+    "idCaptor": "integer",
     "value": "double",
     "nature": "string",
     "date": "string"

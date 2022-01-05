@@ -1,6 +1,6 @@
 # Airport Project
 
-Project réalisé pour un cours d'architecture distriubée par Justine F, Bruno P, Paul V et Aymeric L
+Project réalisé pour un cours d'architectures distribuées par Justine F, Bruno P, Paul V et Aymeric L
 
 ## Ressources
 

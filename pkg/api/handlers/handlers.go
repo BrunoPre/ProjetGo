@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	. "Project/pkg/api/db"
@@ -41,12 +42,20 @@ func SensorDataIndex(w http.ResponseWriter, r *http.Request, _ mux.Params) {
 	}
 }
 
+// PostShow handler shows the post at "posts/id" as JSON.
+func SensorDataShow(w http.ResponseWriter, r *http.Request, ps mux.Params) {
+	id, err := strconv.Atoi(ps.ByName("id"))
+	HandleError(err)
+	sensorData := FindSensorData(id)
+	if err := json.NewEncoder(w).Encode(sensorData); err != nil {
+		panic(err)
+	}
+}
+
 //// PostShow handler shows the post at "posts/id" as JSON.
-//func PostShow(w http.ResponseWriter, r *http.Request, ps mux.Params) {
-//	id, err := strconv.Atoi(ps.ByName("postId"))
-//	HandleError(err)
-//	post := FindPost(id)
-//	if err := json.NewEncoder(w).Encode(post); err != nil {
+//func GetSensorDataByIata(w http.ResponseWriter, r *http.Request, ps mux.Params) {
+//	sensorData := FindSensorDataByIata(ps.ByName("airportId"))
+//	if err := json.NewEncoder(w).Encode(sensorData); err != nil {
 //		panic(err)
 //	}
 //}
@@ -75,10 +84,3 @@ func SensorDataCreate(w http.ResponseWriter, r *http.Request, _ mux.Params) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusCreated)
 }
-
-//// PostDelete handler deletes the blog post.
-//func PostDelete(w http.ResponseWriter, r *http.Request, ps mux.Params) {
-//	id, err := strconv.Atoi(ps.ByName("postId"))
-//	HandleError(err)
-//	DeletePost(id)
-//}

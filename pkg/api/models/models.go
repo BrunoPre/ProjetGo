@@ -6,7 +6,7 @@ import (
 
 type SensorData struct {
 	Id        int       `json:"id"`
-	AirportId int       `json:"airportId"`
+	AirportId string    `json:"airportId"`
 	Measure   Measure   `json:"measure"`
 	Value     float64   `json:"value"`
 	Timestamp time.Time `json:"timestamp"`

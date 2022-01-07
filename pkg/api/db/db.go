@@ -21,23 +21,23 @@ func RedisConnect() redis.Conn {
 }
 
 // init seeds some ridiculous initial data
-func init() {
-	CreateSensorData(SensorData{
-		AirportId: 5,
-		Measure:   "Temperature",
-		Value:     15.20,
-	})
-	CreateSensorData(SensorData{
-		AirportId: 5,
-		Measure:   "Atmospheric pressure",
-		Value:     1220,
-	})
-	CreateSensorData(SensorData{
-		AirportId: 5,
-		Measure:   "Wind speed",
-		Value:     65,
-	})
-}
+//func init() {
+//	CreateSensorData(SensorData{
+//		AirportId: "NTE",
+//		Measure:   "Temperature",
+//		Value:     15.20,
+//	})
+//	CreateSensorData(SensorData{
+//		AirportId: "NTE",
+//		Measure:   "Atmospheric pressure",
+//		Value:     1220,
+//	})
+//	CreateSensorData(SensorData{
+//		AirportId: "NTE",
+//		Measure:   "Wind speed",
+//		Value:     65,
+//	})
+//}
 
 func FindAll() SensorDatas {
 
@@ -63,6 +63,32 @@ func FindAll() SensorDatas {
 	return sensorDatas
 }
 
+func FindSensorData(id int) SensorData {
+	var sensorData SensorData
+
+	c := RedisConnect()
+	defer c.Close()
+	reply, err := c.Do("GET", "sensorData:"+strconv.Itoa(id))
+	HandleError(err)
+	if err = json.Unmarshal(reply.([]byte), &sensorData); err != nil {
+		panic(err)
+	}
+	return sensorData
+}
+
+//func FindSensorDataByIata(id string) SensorData {
+//	var sensorData SensorData
+//
+//	c := RedisConnect()
+//	defer c.Close()
+//	reply, err := c.Do("GET", "sensorData:" + id)
+//	HandleError(err)
+//	if err = json.Unmarshal(reply.([]byte), &sensorData); err != nil {
+//		panic(err)
+//	}
+//	return sensorData
+//}
+
 // CreateSensorData creates a sensor data.
 func CreateSensorData(s SensorData) {
 	currentSensorDatasID++
@@ -82,19 +108,3 @@ func CreateSensorData(s SensorData) {
 
 	fmt.Println("GET ", reply)
 }
-
-//// DeletePost deletes a blog post.
-//func DeletePost(id int) {
-//
-//	c := RedisConnect()
-//	defer c.Close()
-//
-//	reply, err := c.Do("DEL", "post:"+strconv.Itoa(id))
-//	HandleError(err)
-//
-//	if reply.(int) != 1 {
-//		fmt.Println("No post removed")
-//	} else {
-//		fmt.Println("Post removed")
-//	}
-//}

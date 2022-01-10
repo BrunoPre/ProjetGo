@@ -48,4 +48,22 @@ var routes = Routes{
 		"/sensors-iata/:airportId",
 		GetSensorDataByIata,
 	},
+	Route{
+		"PostMeasure",
+		"GET",
+		"/sensors-measure",
+		GetSensorByMeasure,
+	},
+	Route{
+		"Time",
+		"GET",
+		"/time",
+		GetTime,
+	},
+	Route{
+		"Average",
+		"GET",
+		"/average",
+		GetAverage,
+	},
 }

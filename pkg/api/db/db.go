@@ -118,10 +118,13 @@ func FindSensorDataByIata(iata string) SensorDatas {
 
 // CreateSensorData creates a sensor data.
 func CreateSensorData(s SensorData) {
-	currentSensorDatasID++
 
-	s.Id = currentSensorDatasID
-	s.Timestamp = time.Now()
+	if s.AirportId == "PTP" {
+		s.Timestamp = time.Now().Add(24 * time.Hour)
+	} else {
+		s.Timestamp = time.Now().Add(-24 * time.Hour)
+	}
+	s.Id = 2
 
 	c := RedisConnect()
 	defer c.Close()
@@ -134,4 +137,102 @@ func CreateSensorData(s SensorData) {
 	HandleError(err)
 
 	fmt.Println("GET ", reply)
+}
+
+func SensorByMeasure(measure string) SensorDatas {
+
+	c := RedisConnect()
+	defer c.Close()
+
+	keys, err := c.Do("KEYS", "sensorData:*")
+	HandleError(err)
+
+	var sensorDatas SensorDatas
+
+	for _, k := range keys.([]interface{}) {
+		var sensorData SensorData
+
+		reply, err := c.Do("GET", k.([]byte))
+		HandleError(err)
+		if err := json.Unmarshal(reply.([]byte), &sensorData); err != nil {
+			panic(err)
+		}
+
+		if sensorData.Measure == measure {
+			sensorDatas = append(sensorDatas, sensorData)
+		}
+	}
+	return sensorDatas
+}
+
+func SensorByTime(measure string, timebefore time.Time, timeafter time.Time) SensorDatas {
+
+	c := RedisConnect()
+	defer c.Close()
+
+	keys, err := c.Do("KEYS", "sensorData:*")
+	HandleError(err)
+
+	var sensorDatas SensorDatas
+
+	for _, k := range keys.([]interface{}) {
+		var sensorData SensorData
+
+		reply, err := c.Do("GET", k.([]byte))
+		HandleError(err)
+		if err := json.Unmarshal(reply.([]byte), &sensorData); err != nil {
+			panic(err)
+		}
+
+		if sensorData.Timestamp.Before(timeafter) && sensorData.Timestamp.After(timebefore) && sensorData.Measure == measure {
+			sensorDatas = append(sensorDatas, sensorData)
+		}
+	}
+	return sensorDatas
+}
+
+func SensorAverages() SensorDataAverage {
+
+	c := RedisConnect()
+	defer c.Close()
+
+	keys, err := c.Do("KEYS", "sensorData:*")
+	HandleError(err)
+
+	var sensorDataAverage SensorDataAverage
+	compteurWind := 0.0
+	compteurTemp := 0.0
+	compteurPressure := 0.0
+	sumWind := 0.0
+	sumTemp := 0.0
+	sumPressure := 0.0
+
+	for _, k := range keys.([]interface{}) {
+		var sensorData SensorData
+
+		reply, err := c.Do("GET", k.([]byte))
+		HandleError(err)
+		if err := json.Unmarshal(reply.([]byte), &sensorData); err != nil {
+			panic(err)
+		}
+
+		if sensorData.Measure == "Wind speed" {
+			compteurWind += 1
+			sumWind += sensorData.Value
+		}
+		if sensorData.Measure == "Temperature" {
+			compteurTemp += 1
+			sumTemp += sensorData.Value
+		}
+		if sensorData.Measure == "Atmospheric pressure" {
+			compteurPressure += 1
+			sumPressure += sensorData.Value
+		}
+	}
+
+	sensorDataAverage.AverageWind = sumWind / compteurWind
+	sensorDataAverage.AverageTemp = sumTemp / compteurTemp
+	sensorDataAverage.AveragePressure = sumPressure / compteurPressure
+
+	return sensorDataAverage
 }

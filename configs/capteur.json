@@ -1,10 +1,8 @@
 {
-    "sensors-configs": [
-        {"clientId":10,
-        "brokerAddr":"localhost",
-        "brokerPort":1883,
-        "qosLevel":0,
-        "measureType":"temp",
-        "airportId":512}
-    ]
+    "clientId":10,
+    "brokerAddr":"localhost",
+    "brokerPort":1883,
+    "qosLevel":0,
+    "measureType":"temp",
+    "airportId":512
 }

@@ -1,5 +1,7 @@
 package structs
 
+import "fmt"
+
 type SensorConfig struct {
 	// uppercase on first letter --> export the attrs for json unmarshalling
 	ClientId    int    `json:"clientId"`
@@ -10,6 +12,7 @@ type SensorConfig struct {
 	AirportId   int    `json:"airportId"`
 }
 
-type SensorsConfigs struct {
-	SensorsConfigs []SensorConfig `json:"sensors-configs"'`
+func (s SensorConfig) String() string {
+	return fmt.Sprintf("{ClientId=%d; BrokerAddr=%s; BrokerPort=%d; QosLevel=%d; MeasureType=%s; AirportId=%d}",
+		s.ClientId, s.BrokerAddr, s.BrokerPort, s.QosLevel, s.MeasureType, s.AirportId)
 }

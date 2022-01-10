@@ -9,7 +9,6 @@ import (
 	"math/rand"
 	"os"
 	"path/filepath"
-	"strconv"
 	"time"
 )
 
@@ -24,23 +23,14 @@ func main() {
 		panic(fmt.Sprintf("Couldn't open config file \"%w\"", err))
 	}
 
-	var sensorsConfigs structs.SensorsConfigs
-	err = json.Unmarshal(fileByte, &sensorsConfigs)
+	var sensorConfig structs.SensorConfig
+	err = json.Unmarshal(fileByte, &sensorConfig)
 	if err != nil {
 		panic(fmt.Sprintf("Couldn't parse the file \"%w\"", err))
 	}
 
-	// 2 printing ways
-	for i := 0; i < len(sensorsConfigs.SensorsConfigs); i++ {
-		s := sensorsConfigs.SensorsConfigs[i]
-		fmt.Println("clientId: " + strconv.Itoa(s.ClientId))
-		fmt.Println("brokenAddr: " + s.BrokerAddr)
-		fmt.Println("brokerPort: " + strconv.Itoa(s.BrokerPort))
-		fmt.Println("qosLevel: " + strconv.Itoa(s.QosLevel))
-		fmt.Println("measureType: " + s.MeasureType)
-		fmt.Println("airportId: " + strconv.Itoa(s.AirportId))
-	}
-	fmt.Println(sensorsConfigs)
+	s := sensorConfig
+	fmt.Println(s.String())
 
 	client := mqttClient.Connect("localhost:1883", "golang-sub")
 	var sensorData structs.SensorData

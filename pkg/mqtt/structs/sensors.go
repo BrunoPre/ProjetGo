@@ -2,6 +2,9 @@ package structs
 
 import (
 	"fmt"
+	"github.com/aquilax/go-perlin"
+	"math"
+	"math/rand"
 	"time"
 )
 
@@ -21,11 +24,11 @@ type SensorData struct {
 }
 
 func (s Sensor) GenerateData(currentTime time.Time) SensorData {
-	/*p := perlin.NewPerlin(2, 2, 2, int64(100))
-	rand := float64(rand.Intn(5)) / 10
-	valRand := math.Abs(p.Noise1D(rand) * 1000)*/
-	valRand := 0.0
-	return SensorData{s.Id, s.AirportId, s.Measure, valRand, currentTime}
+	p := perlin.NewPerlinRandSource(2, 2, 2, rand.NewSource(100))
+	valRand := math.Abs(p.Noise1D(float64(currentTime.Unix())))
+	valRand = valRand / 1000000000000000000000000000000000000 // TODO: find a proper & cleaner way to get a 2-digit integer
+	//valRand := GenerateStableRandomNumericalValues(s.Measure)
+	return SensorData{s.Id, s.AirportId, s.Measure, float64(valRand), currentTime}
 }
 
 func (s SensorData) String() string {

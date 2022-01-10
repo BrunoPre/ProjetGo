@@ -217,7 +217,7 @@ func SensorByTime(measure string, timebefore time.Time, timeafter time.Time) Sen
 }
 
 // SensorAverages returns the average of each type of sensor for a given day
-func SensorAverages() SensorDataAverage {
+func SensorAverages(date time.Time) SensorDataAverage {
 
 	c := RedisConnect()
 	defer c.Close()
@@ -242,17 +242,19 @@ func SensorAverages() SensorDataAverage {
 			panic(err)
 		}
 
-		if sensorData.Measure == "Wind speed" {
-			compteurWind += 1
-			sumWind += sensorData.Value
-		}
-		if sensorData.Measure == "Temperature" {
-			compteurTemp += 1
-			sumTemp += sensorData.Value
-		}
-		if sensorData.Measure == "Atmospheric pressure" {
-			compteurPressure += 1
-			sumPressure += sensorData.Value
+		if sensorData.Timestamp.Before(date.Add(24*time.Hour)) && sensorData.Timestamp.After(date) {
+			if sensorData.Measure == "Wind speed" {
+				compteurWind += 1
+				sumWind += sensorData.Value
+			}
+			if sensorData.Measure == "Temperature" {
+				compteurTemp += 1
+				sumTemp += sensorData.Value
+			}
+			if sensorData.Measure == "Atmospheric pressure" {
+				compteurPressure += 1
+				sumPressure += sensorData.Value
+			}
 		}
 	}
 

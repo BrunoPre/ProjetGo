@@ -104,7 +104,17 @@ func GetSensorByTime(w http.ResponseWriter, r *http.Request, _ mux.Params) {
 
 // GetAverage handler shows the average of each type of sensor for a given day at "/average" as JSON.
 func GetAverage(w http.ResponseWriter, r *http.Request, _ mux.Params) {
-	averages := SensorAverages()
+	layout := "2006-01-02"
+
+	str := r.URL.Query().Get("date")
+	timebefore, err := time.Parse(layout, str)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("GET ", timebefore)
+
+	averages := SensorAverages(timebefore)
 	if err := json.NewEncoder(w).Encode(averages); err != nil {
 		panic(err)
 	}

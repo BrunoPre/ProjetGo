@@ -17,7 +17,6 @@ type Route struct {
 type Routes []Route
 
 var routes = Routes{
-	// It is a good idea to name the fields when declaring a struct object. SensorDataShow
 	Route{
 		"Index",
 		"GET",
@@ -25,22 +24,22 @@ var routes = Routes{
 		Index,
 	},
 	Route{
-		"PostIndex",
+		"GetSensors",
 		"GET",
 		"/sensors",
-		SensorDataIndex,
+		GetSensors,
 	},
 	Route{
-		"PostCreate",
+		"PostSensor",
 		"POST",
 		"/sensors",
-		SensorDataCreate,
+		PostSensor,
 	},
 	Route{
-		"SensorDataShow",
+		"GetSensor",
 		"GET",
 		"/sensors/:id",
-		SensorDataShow,
+		GetSensor,
 	},
 	Route{
 		"GetSensorDataByIata",
@@ -49,19 +48,19 @@ var routes = Routes{
 		GetSensorDataByIata,
 	},
 	Route{
-		"PostMeasure",
+		"GetSensorByMeasure",
 		"GET",
 		"/sensors-measure",
 		GetSensorByMeasure,
 	},
 	Route{
-		"Time",
+		"GetSensorByTime",
 		"GET",
 		"/time",
-		GetTime,
+		GetSensorByTime,
 	},
 	Route{
-		"Average",
+		"GetAverage",
 		"GET",
 		"/average",
 		GetAverage,

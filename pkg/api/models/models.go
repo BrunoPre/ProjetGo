@@ -4,6 +4,7 @@ import (
 	"time"
 )
 
+// data structure
 type SensorData struct {
 	Id        int       `json:"id"`
 	AirportId string    `json:"airportId"`
@@ -16,6 +17,7 @@ type Measure string
 
 type SensorDatas []SensorData
 
+// structure to return the average for each type of measurement of a day
 type SensorDataAverage struct {
 	AverageWind     float64 `json:"averageWind"`
 	AveragePressure float64 `json:"averagePressure"`

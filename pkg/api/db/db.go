@@ -4,14 +4,9 @@ import (
 	. "Project/pkg/api/models"
 	"encoding/json"
 	"fmt"
+	"github.com/garyburd/redigo/redis"
 	"strconv"
 	"time"
-
-	"github.com/gomodule/redigo/redis"
-)
-
-var (
-	currentSensorDatasID int
 )
 
 // RedisConnect connects to a default redis server at port 6379
@@ -24,37 +19,62 @@ func RedisConnect() redis.Conn {
 //// init seeds some ridiculous initial data
 //func init() {
 //	CreateSensorData(SensorData{
+//		Id: 1,
 //		AirportId: "PTP",
 //		Measure:   "Temperature",
-//		Value:     15.20,
+//		Value:     28.35,
 //	})
 //	CreateSensorData(SensorData{
+//		Id: 2,
 //		AirportId: "PTP",
 //		Measure:   "Atmospheric pressure",
-//		Value:     1220,
+//		Value:     1200,
 //	})
 //	CreateSensorData(SensorData{
+//		Id: 3,
 //		AirportId: "PTP",
 //		Measure:   "Wind speed",
-//		Value:     65,
+//		Value:     25,
 //	})
 //	CreateSensorData(SensorData{
+//		Id: 4,
 //		AirportId: "NTE",
 //		Measure:   "Temperature",
-//		Value:     15.20,
+//		Value:     18.80,
 //	})
 //	CreateSensorData(SensorData{
+//		Id: 5,
 //		AirportId: "NTE",
 //		Measure:   "Atmospheric pressure",
 //		Value:     1220,
 //	})
 //	CreateSensorData(SensorData{
+//		Id: 6,
 //		AirportId: "NTE",
+//		Measure:   "Wind speed",
+//		Value:     75,
+//	})
+//	CreateSensorData(SensorData{
+//		Id: 7,
+//		AirportId: "ORY",
+//		Measure:   "Temperature",
+//		Value:     15.20,
+//	})
+//	CreateSensorData(SensorData{
+//		Id: 8,
+//		AirportId: "ORY",
+//		Measure:   "Atmospheric pressure",
+//		Value:     1240,
+//	})
+//	CreateSensorData(SensorData{
+//		Id: 9,
+//		AirportId: "ORY",
 //		Measure:   "Wind speed",
 //		Value:     65,
 //	})
 //}
 
+// FindAll return all data
 func FindAll() SensorDatas {
 
 	c := RedisConnect()
@@ -79,6 +99,7 @@ func FindAll() SensorDatas {
 	return sensorDatas
 }
 
+// FindSensorData returns the data from the sensor whose id was passed as a parameter
 func FindSensorData(id int) SensorData {
 	var sensorData SensorData
 
@@ -92,6 +113,7 @@ func FindSensorData(id int) SensorData {
 	return sensorData
 }
 
+// FindSensorDataByIata returns the data from the sensor whose iata code was passed as a parameter
 func FindSensorDataByIata(iata string) SensorDatas {
 	c := RedisConnect()
 	defer c.Close()
@@ -122,10 +144,11 @@ func CreateSensorData(s SensorData) {
 
 	if s.AirportId == "PTP" {
 		s.Timestamp = time.Now().Add(24 * time.Hour)
-	} else {
+	} else if s.AirportId == "ORY" {
 		s.Timestamp = time.Now().Add(-24 * time.Hour)
+	} else {
+		s.Timestamp = time.Now()
 	}
-	s.Id = 2
 
 	c := RedisConnect()
 	defer c.Close()
@@ -133,15 +156,15 @@ func CreateSensorData(s SensorData) {
 	b, err := json.Marshal(s)
 	HandleError(err)
 
-	// Save JSON blob to Redis
+	// Save JSON sensor data to Redis
 	reply, err := c.Do("SET", "sensorData:"+strconv.Itoa(s.Id), b)
 	HandleError(err)
 
 	fmt.Println("GET ", reply)
 }
 
+// SensorByMeasure returns all the sensors of a type of measure
 func SensorByMeasure(measure string) SensorDatas {
-
 	c := RedisConnect()
 	defer c.Close()
 
@@ -166,6 +189,7 @@ func SensorByMeasure(measure string) SensorDatas {
 	return sensorDatas
 }
 
+// SensorByTime returns all the sensors of a type of measurement and which are included between two dates
 func SensorByTime(measure string, timebefore time.Time, timeafter time.Time) SensorDatas {
 
 	c := RedisConnect()
@@ -192,6 +216,7 @@ func SensorByTime(measure string, timebefore time.Time, timeafter time.Time) Sen
 	return sensorDatas
 }
 
+// SensorAverages returns the average of each type of sensor for a given day
 func SensorAverages() SensorDataAverage {
 
 	c := RedisConnect()

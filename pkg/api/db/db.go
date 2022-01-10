@@ -4,9 +4,10 @@ import (
 	. "Project/pkg/api/models"
 	"encoding/json"
 	"fmt"
-	"github.com/garyburd/redigo/redis"
 	"strconv"
 	"time"
+
+	"github.com/gomodule/redigo/redis"
 )
 
 var (

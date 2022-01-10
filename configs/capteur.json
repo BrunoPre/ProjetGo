@@ -4,5 +4,5 @@
     "brokerPort":1883,
     "qosLevel":0,
     "measureType":"temp",
-    "airportId":512
+    "airportId":"nte"
 }

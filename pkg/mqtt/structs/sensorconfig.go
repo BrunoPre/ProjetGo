@@ -9,10 +9,10 @@ type SensorConfig struct {
 	BrokerPort  int    `json:"brokerPort"`
 	QosLevel    int    `json:"qosLevel"`
 	MeasureType string `json:"measureType"`
-	AirportId   int    `json:"airportId"`
+	AirportId   string `json:"airportId"`
 }
 
 func (s SensorConfig) String() string {
-	return fmt.Sprintf("{ClientId=%d; BrokerAddr=%s; BrokerPort=%d; QosLevel=%d; MeasureType=%s; AirportId=%d}",
+	return fmt.Sprintf("{ClientId=%d; BrokerAddr=%s; BrokerPort=%d; QosLevel=%d; MeasureType=%s; AirportId=%s}",
 		s.ClientId, s.BrokerAddr, s.BrokerPort, s.QosLevel, s.MeasureType, s.AirportId)
 }

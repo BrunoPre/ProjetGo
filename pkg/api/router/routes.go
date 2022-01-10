@@ -42,10 +42,10 @@ var routes = Routes{
 		"/sensors/:id",
 		SensorDataShow,
 	},
-	//Route{
-	//	"GetSensorDataByIata",
-	//	"GET",
-	//	"/sensors-iata/:airportId",
-	//	GetSensorDataByIata,
-	//},
+	Route{
+		"GetSensorDataByIata",
+		"GET",
+		"/sensors-iata/:airportId",
+		GetSensorDataByIata,
+	},
 }

@@ -52,13 +52,13 @@ func SensorDataShow(w http.ResponseWriter, r *http.Request, ps mux.Params) {
 	}
 }
 
-//// PostShow handler shows the post at "posts/id" as JSON.
-//func GetSensorDataByIata(w http.ResponseWriter, r *http.Request, ps mux.Params) {
-//	sensorData := FindSensorDataByIata(ps.ByName("airportId"))
-//	if err := json.NewEncoder(w).Encode(sensorData); err != nil {
-//		panic(err)
-//	}
-//}
+// PostShow handler shows the post at "posts/id" as JSON.
+func GetSensorDataByIata(w http.ResponseWriter, r *http.Request, ps mux.Params) {
+	sensorData := FindSensorDataByIata(ps.ByName("airportId"))
+	if err := json.NewEncoder(w).Encode(sensorData); err != nil {
+		panic(err)
+	}
+}
 
 // PostCreate creates a new post data
 func SensorDataCreate(w http.ResponseWriter, r *http.Request, _ mux.Params) {

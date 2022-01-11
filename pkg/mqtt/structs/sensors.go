@@ -36,6 +36,7 @@ func (s Sensor) GenerateData(currentTime time.Time) SensorData {
 
 	*/
 	val := GenData(currentTime)
+
 	return SensorData{s.Id, s.AirportId, s.Measure, val, currentTime}
 }
 
@@ -52,4 +53,19 @@ func GenData(currentTime time.Time) float64 {
 func CourbeTemperature(x float64) float64 {
 	x = x / 60
 	return 3.5*math.Cos(math.Pi/12*x+2.7) + 0.02*math.Cos(4*math.Pi*x) + 0.5*math.Cos(0.5*math.Pi*x) + 8
+}
+
+func CourbePression(x float64) float64 {
+	x = x / 60
+	return 0.001*math.Cos(math.Pi/12*x+2.7) + 0.02*math.Cos(4*math.Pi*x) + 0.1*math.Cos(0.5*math.Pi*x) + 1.013
+}
+
+func CourbeVent(x float64) float64 {
+	x = x / 60
+	y := 0.00
+
+	for i := 0; i < 60; i++ {
+		y += 4 / math.Pi * (math.Sin(2*float64(i)+1) * 2 * math.Pi * 1 / 12 * x)
+	}
+	return y
 }

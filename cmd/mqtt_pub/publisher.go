@@ -60,7 +60,7 @@ func main() {
 			fmt.Println("sending data ", sensorData)
 		}
 
-		// publish every `Nseconds` in 'airport/<airportId>' topic
+		// publish every 10 seconds in 'airport/<airportId>' topic
 		client.Publish("airport/"+airportId, qosLevel, false, json)
 		time.Sleep(time.Second * 10)
 	}

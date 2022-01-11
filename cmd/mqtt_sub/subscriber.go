@@ -14,14 +14,16 @@ import (
 )
 
 func main() {
-
+	args := os.Args
 	// argument parsing
-	if len(os.Args) != 2 {
+	if len(args) != 2 {
 		panic("Incorrect arguments lengths. Please provide the path to the config file")
 	}
-	fmt.Println(os.Args)
+	fmt.Println(args)
 
-	fileByte, err := ioutil.ReadFile(filepath.Clean(os.Args[1]))
+	arg := os.Args[1]
+
+	fileByte, err := ioutil.ReadFile(filepath.Clean(arg))
 	if err != nil {
 		panic(fmt.Sprintf("Couldn't open config file \"%w\"", err))
 	}
@@ -36,16 +38,18 @@ func main() {
 	// instance of sensor config
 	s := sensorConfig
 	fmt.Println(s.String())
-	brokerUri := s.BrokerAddr + ":" + strconv.Itoa(s.BrokerPort)
-	clientId := strconv.Itoa(s.ClientId)
+	brokerUri := s.BrokerAddr + ":" + strconv.Itoa(s.BrokerPort) // "addr:port"
+	//clientId := strconv.Itoa(s.ClientId)
 	qosLevel := byte(s.QosLevel)
-	airportId := s.AirportId
+	//airportId := s.AirportId
 
+	// Init REDIS DB & controller
 	storage.Init()
 	controller.Init()
 
-	client := mqttClient.Connect(brokerUri, clientId+"-sub")
-	token := client.Subscribe(airportId, qosLevel, controller.Controller.HandleSensorData)
+	client := mqttClient.Connect(brokerUri, "sub")
+	// subscribe to all airports (allowed by '#' wildcard)
+	token := client.Subscribe("airport/#", qosLevel, controller.Controller.HandleSensorData)
 
 	token.Wait()
 	for {

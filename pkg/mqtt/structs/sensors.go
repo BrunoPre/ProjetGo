@@ -57,7 +57,7 @@ func CourbeTemperature(x float64) float64 {
 
 func CourbePression(x float64) float64 {
 	x = x / 60
-	return 0.001*math.Cos(math.Pi/12*x+2.7) + 0.02*math.Cos(4*math.Pi*x) + 0.1*math.Cos(0.5*math.Pi*x) + 1.013
+	return 2*math.Cos(math.Pi/12*x+2.7) + 0.03*math.Cos(6*math.Pi*x) + 0.2*math.Cos(0.5*math.Pi*x) + 1013
 }
 
 func CourbeVent(x float64) float64 {

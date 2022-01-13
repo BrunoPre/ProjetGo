@@ -1,8 +1,11 @@
 {
-    "clientId":9,
-    "brokerAddr":"localhost",
-    "brokerPort":1883,
-    "qosLevel":0,
+    "mqttConf": {
+        "brokerAddr":"localhost",
+        "brokerPort":1883,
+        "qosLevel":0,
+        "clientName": "capteur-9-sub"
+    },
     "measureType":"pres",
-    "airportId":"ptp"
+    "airportId":"ptp",
+    "clientId":9
 }

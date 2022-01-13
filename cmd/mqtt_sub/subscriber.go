@@ -2,15 +2,16 @@ package main
 
 import (
 	mqttClient "Project/pkg/mqtt/client"
+	"Project/pkg/mqtt/configuration"
 	"Project/pkg/mqtt/controller"
-	"Project/pkg/mqtt/storage"
-	"Project/pkg/mqtt/structs"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/signal"
 	"path/filepath"
 	"strconv"
+	"syscall"
 )
 
 func main() {
@@ -29,29 +30,36 @@ func main() {
 	}
 
 	// unmarshalling the JSON config file
-	var sensorConfig structs.SensorConfig
+	var sensorConfig configuration.Config
 	err = json.Unmarshal(fileByte, &sensorConfig)
 	if err != nil {
 		panic(fmt.Sprintf("Couldn't parse the file \"%w\"", err))
 	}
 
-	// instance of sensor config
-	s := sensorConfig
-	fmt.Println(s.String())
-	brokerUri := s.BrokerAddr + ":" + strconv.Itoa(s.BrokerPort) // "addr:port"
-	//clientId := strconv.Itoa(s.ClientId)
-	qosLevel := byte(s.QosLevel)
-	//airportId := s.AirportId
+	brokerUri := sensorConfig.MqttConf.BrokerAddr + ":" + strconv.Itoa(sensorConfig.MqttConf.BrokerPort) // "addr:port"
+	//clientId := strconv.Itoa(sensorConfig.ClientId)
+	qosLevel := byte(sensorConfig.MqttConf.QosLevel)
+	//airportId := sensorConfig.AirportId
 
-	// Init REDIS DB & controller
-	storage.Init()
-	controller.Init()
-
-	client := mqttClient.Connect(brokerUri, "sub")
+	var sensorController controller.SensorController
+	if sensorController, err = controller.FactoryControllerDao(sensorConfig); err != nil {
+		panic(err)
+	}
+	client := mqttClient.Connect(brokerUri, sensorConfig.MqttConf.ClientName)
 	// subscribe to all airports (allowed by '#' wildcard)
-	token := client.Subscribe("airport/#", qosLevel, controller.Controller.HandleSensorData)
+	token := client.Subscribe("airport/#", qosLevel, sensorController.HandleSensorData)
 
 	token.Wait()
+
+	// Si écoute les signaux de terminaison pour déconnecter le client en cas d'arrêt du programme.
+	// defer ne fonctionne qu'en cas d'arrêt normal du programme (sortie de bloc par exemple)
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+	go func() {
+		<-sigs
+		client.Disconnect(0)
+	}()
+
 	for {
 	}
 

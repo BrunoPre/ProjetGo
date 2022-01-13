@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"Project/pkg/mqtt/configuration"
 	"Project/pkg/mqtt/structs"
 	"context"
 	"encoding/csv"
@@ -10,6 +11,8 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
+	"time"
 
 	"github.com/go-redis/redis/v8"
 )
@@ -28,8 +31,11 @@ type RedisSensorDao struct {
 	client *redis.Client
 }
 
-func exist(pathFile string) (existe bool) {
+type CsvSensorDAO struct {
+	dirPath string
+}
 
+func exist(pathFile string) (existe bool) {
 	if _, err := os.Stat(pathFile); err == nil {
 		existe = true
 
@@ -39,9 +45,13 @@ func exist(pathFile string) (existe bool) {
 	}
 	return
 }
-
-// Appends at the end of a CSV file (existing or not) an incoming SensorData
-func WriteCSV(data structs.SensorData) error {
+func (c CsvSensorDAO) Write(data structs.SensorData) error {
+	if !exist(c.dirPath) {
+		err := os.MkdirAll(c.dirPath, os.ModePerm)
+		if err != nil {
+			return err
+		}
+	}
 
 	AirportId := data.AirportId
 	date := data.Timestamp.Format("2006-01-02")
@@ -50,7 +60,7 @@ func WriteCSV(data structs.SensorData) error {
 	entry := []string{strconv.Itoa(data.Id), AirportId, string(data.Measure), fmt.Sprintf("%f", data.Value), date}
 
 	// Path's creation for the .csv
-	path := "./ressources/" + AirportId + "_" + date + string(data.Measure) + ".csv"
+	path := "./" + c.dirPath + "/" + AirportId + "_" + date + string(data.Measure) + ".csv"
 	fields := []string{"id", "AirportId", "Measure", "Value", "date"}
 
 	// Make a list of list
@@ -97,17 +107,39 @@ func WriteCSV(data structs.SensorData) error {
 	if err = csvFileWriter.Close(); err != nil {
 		log.Fatalf("failed closing file: %s", err)
 	}
-
 	return nil
 }
 
 func (r RedisSensorDao) Write(data structs.SensorData) error {
 	ctx := context.Background()
-	json, err := json.Marshal(data)
+	jsonData, err := json.Marshal(data)
 	if err != nil {
 		return fmt.Errorf("Error while unmarshalling the data, %w", err)
 	}
-	WriteCSV(data)
-	fmt.Println(r.client.Set(ctx, strconv.Itoa(data.Id), json, 0))
+	fmt.Println(r.client.Set(ctx, fmt.Sprintf("%d_%s_%s", data.Id, data.AirportId, strings.Replace(data.Timestamp.Format(time.Stamp), " ", "_", -1)), jsonData, 0))
 	return nil
+}
+
+func FactorySensorDao(config configuration.DaoConfig) (SensorDao, error) {
+	switch config.DaoType {
+	case "csv":
+		if len(config.FilePath) == 0 {
+			return nil, fmt.Errorf("%w : empty filePath", ErrInvalidConfig)
+		}
+		return CsvSensorDAO{config.FilePath}, nil
+	case "redis":
+		if config.RedisDb < 0 {
+			return nil, fmt.Errorf("%w : negative RedisDb '%d'", ErrInvalidConfig, config.RedisDb)
+		}
+		if len(config.RedisAddr) == 0 {
+			return nil, fmt.Errorf("%w : empty RedisAdrr", ErrInvalidConfig)
+		}
+		return RedisSensorDao{redis.NewClient(&redis.Options{
+			Addr:     config.RedisAddr,
+			Password: config.RedisPwd, // no password set
+			DB:       config.RedisDb,  // use default DB
+		})}, nil
+	default:
+		return nil, fmt.Errorf("%w : invalid daoType '%s'", ErrInvalidConfig, config.DaoType)
+	}
 }

@@ -2,9 +2,8 @@ package main
 
 import (
 	mqttClient "Project/pkg/mqtt/client"
+	"Project/pkg/mqtt/configuration"
 	"Project/pkg/mqtt/controller"
-	"Project/pkg/mqtt/storage"
-	"Project/pkg/mqtt/structs"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -15,16 +14,12 @@ import (
 )
 
 // Subscribes to a pub associated to a sensor given by its config file `fileByteJson`
-func sub(wg *sync.WaitGroup, brokerUri string, qos byte) {
+func sub(wg *sync.WaitGroup, brokerUri string, qos byte, sensorController controller.SensorController) {
 	defer wg.Done()
-
-	// Init REDIS DB & controller
-	storage.Init()
-	controller.Init()
 
 	client := mqttClient.Connect(brokerUri, "sub")
 	// subscribe to all airports (allowed by '#' wildcard)
-	token := client.Subscribe("airport/#", qos, controller.Controller.HandleSensorData)
+	token := client.Subscribe("airport/#", qos, sensorController.HandleSensorData)
 
 	token.Wait()
 	for {
@@ -32,21 +27,24 @@ func sub(wg *sync.WaitGroup, brokerUri string, qos byte) {
 }
 
 // Get subscription params from a sensor config file
-func getSubParams(fileByte []byte) (string, byte) {
+func getSubParams(fileByte []byte) (string, byte, controller.SensorController, error) {
 
 	// unmarshalling the JSON config file
-	var sensorConfig structs.SensorConfig
+	var (
+		sensorConfig     configuration.Config
+		sensorController controller.SensorController
+	)
 	err := json.Unmarshal(fileByte, &sensorConfig)
 	if err != nil {
 		panic(fmt.Sprintf("Couldn't parse the file \"%e\"", err))
 	}
 
-	// instance of sensor config
-	s := sensorConfig
-	brokerUri := s.BrokerAddr + ":" + strconv.Itoa(s.BrokerPort) // "addr:port"
-	qosLevel := byte(s.QosLevel)
-
-	return brokerUri, qosLevel
+	brokerUri := sensorConfig.MqttConf.BrokerAddr + ":" + strconv.Itoa(sensorConfig.MqttConf.BrokerPort) // "addr:port"
+	qosLevel := byte(sensorConfig.MqttConf.QosLevel)
+	if sensorController, err = controller.FactoryControllerDao(sensorConfig); err != nil {
+		return "", 0, controller.SensorController{}, err
+	}
+	return brokerUri, qosLevel, sensorController, nil
 }
 
 // Check if an element is in an array of string
@@ -96,15 +94,17 @@ func main() {
 		}
 
 		// get broker URI & qos
-		brokerUri, qos := getSubParams(fileByte)
-
+		brokerUri, qos, sensorControler, err := getSubParams(fileByte)
+		if err != nil {
+			panic(fmt.Errorf("error on file %s : %w", file.Name(), err))
+		}
 		if !exists(listBrokerURIs, brokerUri) {
 			listBrokerURIs = append(listBrokerURIs, brokerUri)
 			// add 1 to the WaitGroup counter
 			wg.Add(1)
 
 			// subscribe to the pub
-			go sub(wg, brokerUri, qos)
+			go sub(wg, brokerUri, qos, sensorControler)
 		}
 	}
 	wg.Wait()

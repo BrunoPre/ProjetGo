@@ -1,0 +1,13 @@
+{
+    "dao" : {
+        "daoType": "csv",
+        "filePath": "./resources/"
+    },
+    "mqttConf": {
+        "clientId":9,
+        "brokerAddr":"localhost",
+        "brokerPort":1883,
+        "qosLevel":0,
+        "clientName": "redis-csv"
+    }
+}

@@ -1,3 +1,4 @@
 /.idea
 /.vscode
 pkg/mqtt/structs/generateData.go
+./resources/

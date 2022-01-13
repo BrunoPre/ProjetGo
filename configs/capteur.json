@@ -1,8 +1,11 @@
 {
-    "clientId":10,
-    "brokerAddr":"localhost",
-    "brokerPort":1883,
-    "qosLevel":0,
+    "mqttConf": {
+        "brokerAddr":"localhost",
+        "brokerPort":1883,
+        "qosLevel":0,
+        "clientName": "capteur-10-sub"
+    },
     "measureType":"temp",
-    "airportId":"nte"
+    "airportId":"nte",
+    "clientId":10
 }

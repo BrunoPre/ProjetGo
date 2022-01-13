@@ -6,6 +6,6 @@
         "clientName": "capteur-9-sub"
     },
     "measureType":"pres",
-    "airportId":"ptp",
+    "airportId":"PTP",
     "clientId":9
 }

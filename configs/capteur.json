@@ -6,6 +6,6 @@
         "clientName": "capteur-10-sub"
     },
     "measureType":"temp",
-    "airportId":"nte",
+    "airportId":"NTE",
     "clientId":10
 }

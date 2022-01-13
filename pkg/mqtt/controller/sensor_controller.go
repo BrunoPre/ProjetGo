@@ -21,5 +21,6 @@ func (s SensorController) HandleSensorData(client mqtt.Client, message mqtt.Mess
 		fmt.Printf("Error unmarshalling data %s\n", err.Error())
 	}
 	s.dao.Write(*receivedData)
+	//s.dao.WriteCSV(*receivedData)
 	fmt.Println("Received new data (" + receivedData.String() + ")")
 }

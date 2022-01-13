@@ -45,15 +45,18 @@ func WriteCSV(data structs.SensorData) error {
 	AirportId := strconv.Itoa(data.AirportId)
 	date := data.Timestamp.Format("2006-01-02")
 
+	// Convert data to a List
 	entry := []string{strconv.Itoa(data.Id), AirportId, string(data.Measure), fmt.Sprintf("%f", data.Value), date}
 
-	path := "/ressources/" + AirportId + "_" + date + string(data.Measure) + ".csv"
+	// Path's creation for the .csv
+	path := "./ressources/" + AirportId + "_" + date + string(data.Measure) + ".csv"
 	fields := []string{"id", "AirportId", "Measure", "Value", "date"}
 
+	// Make a list of list
 	wrapped_entry := [][]string{entry}
 	wrapped_fields := [][]string{fields}
-	println("PATH : ", exist(path))
 
+	// Get the previous data if the file exist
 	if exist(path) {
 		// Open the existing file
 		csvFile, err := os.Open(path)
@@ -69,18 +72,21 @@ func WriteCSV(data structs.SensorData) error {
 		if err = csvFile.Close(); err != nil {
 			log.Fatalf("failed closing file: %s", err)
 		}
+		//Add the fields' to the .csv
 		wrapped_entry = append(lines, wrapped_entry...)
 	} else if !exist(path) {
+		//Add the fields' to the .csv
 		wrapped_entry = append(wrapped_fields, wrapped_entry...)
 	}
 
+	// Create the .csv
 	csvFileWritter, err := os.Create(path)
 	if err != nil {
 		log.Fatalf("failed creating file: %s", err)
 	}
+	// Write in the .csv with all the data
 	csvwriter := csv.NewWriter(csvFileWritter)
 	for _, empRow := range wrapped_entry {
-		//fmt.Println(empRow, "\n")
 		_ = csvwriter.Write(empRow)
 	}
 

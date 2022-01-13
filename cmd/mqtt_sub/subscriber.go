@@ -37,9 +37,7 @@ func main() {
 	}
 
 	brokerUri := sensorConfig.MqttConf.BrokerAddr + ":" + strconv.Itoa(sensorConfig.MqttConf.BrokerPort) // "addr:port"
-	//clientId := strconv.Itoa(sensorConfig.ClientId)
 	qosLevel := byte(sensorConfig.MqttConf.QosLevel)
-	//airportId := sensorConfig.AirportId
 
 	var sensorController controller.SensorController
 	if sensorController, err = controller.FactoryControllerDao(sensorConfig); err != nil {
@@ -54,7 +52,7 @@ func main() {
 	// Si écoute les signaux de terminaison pour déconnecter le client en cas d'arrêt du programme.
 	// defer ne fonctionne qu'en cas d'arrêt normal du programme (sortie de bloc par exemple)
 	sigs := make(chan os.Signal, 1)
-	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL)
 	go func() {
 		<-sigs
 		client.Disconnect(0)

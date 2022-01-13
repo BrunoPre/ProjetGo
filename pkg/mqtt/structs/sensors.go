@@ -68,4 +68,5 @@ func CourbeVent(x float64) float64 {
 		y += 4 / math.Pi * (math.Sin(2*float64(i)+1) * 2 * math.Pi * 1 / 12 * x)
 	}
 	return y
+
 }

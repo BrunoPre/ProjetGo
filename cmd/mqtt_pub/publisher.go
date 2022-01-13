@@ -51,6 +51,7 @@ func main() {
 	var sensorData structs.SensorData
 
 	for {
+
 		sensorData = sensor.GenerateData(time.Now())
 
 		json, err := json.Marshal(sensorData)

@@ -53,12 +53,22 @@ func main() {
 	// defer ne fonctionne qu'en cas d'arrêt normal du programme (sortie de bloc par exemple)
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL)
+
+	exitChan := make(chan int)
 	go func() {
-		<-sigs
-		client.Disconnect(0)
+		for {
+			s := <-sigs
+			switch s {
+			case syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL:
+				fmt.Println("Quitting...")
+				client.Disconnect(0)
+				exitChan <- 0
+			default: // keep subscribe
+			}
+		}
 	}()
 
-	for {
-	}
+	exitCode := <-exitChan
+	os.Exit(exitCode)
 
 }

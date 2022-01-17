@@ -47,17 +47,17 @@ func (s Sensor) GenData(currentTime time.Time) float64 {
 }
 
 func GenTemp(x float64) float64 {
-	x = x / 60
+	x = x / 3600
 	return 3.5*math.Cos(math.Pi/12*x+2.7) + 0.02*math.Cos(4*math.Pi*x) + 0.5*math.Cos(0.5*math.Pi*x) + 8
 }
 
 func GenPres(x float64) float64 {
-	x = x / 60
+	x = x / 3600
 	return 0.001*math.Cos(math.Pi/12*x+2.7) + 0.02*math.Cos(4*math.Pi*x) + 0.1*math.Cos(0.5*math.Pi*x) + 1013
 }
 
 func GenWind(x float64) float64 {
-	x = x / 60
+	x = x / 3600
 	y := 0.00
 
 	for i := 0; i < 60; i++ {

@@ -5,7 +5,7 @@
         "qosLevel":0,
         "clientName": "capteur-9-sub"
     },
-    "measureType":"pres",
+    "measureType":"Atmospheric pressure",
     "airportId":"PTP",
     "clientId":9
 }

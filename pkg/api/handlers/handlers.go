@@ -110,6 +110,8 @@ func GetAverage(w http.ResponseWriter, r *http.Request, _ mux.Params) {
 		panic(err)
 	}
 
+	fmt.Println(timebefore)
+
 	averages := SensorAverages(timebefore)
 	if err := json.NewEncoder(w).Encode(averages); err != nil {
 		panic(err)

@@ -5,7 +5,7 @@
         "qosLevel":0,
         "clientName": "capteur-10-sub"
     },
-    "measureType":"temp",
+    "measureType":"Temperature",
     "airportId":"NTE",
     "clientId":10
 }

@@ -191,9 +191,21 @@ func SensorAverages(date time.Time) SensorDataAverage {
 		}
 	}
 
-	sensorDataAverage.AverageWind = sumWind / compteurWind
-	sensorDataAverage.AverageTemp = sumTemp / compteurTemp
-	sensorDataAverage.AveragePressure = sumPressure / compteurPressure
+	if sumWind != 0.0 && compteurWind != 0.0 {
+		sensorDataAverage.AverageWind = sumWind / compteurWind
+	} else {
+		sensorDataAverage.AverageWind = 0
+	}
+	if sumTemp != 0.0 && compteurTemp != 0.0 {
+		sensorDataAverage.AverageTemp = sumTemp / compteurTemp
+	} else {
+		sensorDataAverage.AverageTemp = 0
+	}
+	if sumPressure != 0.0 && compteurPressure != 0.0 {
+		sensorDataAverage.AveragePressure = sumPressure / compteurPressure
+	} else {
+		sensorDataAverage.AveragePressure = 0
+	}
 
 	return sensorDataAverage
 }

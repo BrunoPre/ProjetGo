@@ -1,0 +1,281 @@
+openapi: 3.0.0
+info:
+  title: Airport GO API
+  description: This is the API of the Airport service
+  contact:
+    email: lecolazet.aymeric@imt-atlantique.net
+  license:
+    name: GPL v3
+    url: https://www.gnu.org/licenses/gpl-3.0.en.html
+  version: 1.0.0
+tags:
+  - name: developers
+    description: Operations available to regular developers
+paths:
+  /:
+    get:
+      tags:
+        - developers
+      summary: home page of the service
+      description: Nothing to do
+      operationId: Index
+      responses:
+        '200':
+          description: welcome message
+          content:
+            text/html:
+              schema:
+                type: string
+                example: <h1>Hello, welcome to airport service</h1>
+  /sensors:
+    get:
+      tags:
+        - developers
+      summary: get the full JSON sensors database
+      description: Nothing to do
+      operationId: GetSensors
+      responses:
+        '200':
+          description: full JSON
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/SensorsData'
+    post:
+      tags:
+        - developers
+      summary: post a sensor item
+      description: Adds a sensor to the system to test without the pub sub part of the application
+      operationId: PostSensor
+      parameters:
+      - name: SensorData
+        in: query
+        description: SensorData
+        required: true
+        explode: false
+        schema:
+          maximum: 1
+          minimum: 1
+          type: object
+      requestBody:
+        description: Inventory item to add
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SensorData'
+      responses:
+        "200":
+          description: Movie created
+  /sensors/{Id}:
+    get:
+      tags:
+        - developers
+      summary: get the sensor by its id
+      description: By passing in the appropriate options, you can get info of a SensorData
+      operationId: GetSensor
+      parameters:
+        - name: Id
+          in: path
+          description: Sensor ID.
+          required: true
+          style: simple
+          explode: false
+          schema:
+            maximum: 1
+            minimum: 1
+            type: integer
+      responses:
+        '200':
+          description: Sensor description
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/SensorData'
+        '400':
+          description: bad input parameter
+  /sensors-iata/{AirportId}:
+    get:
+      tags:
+        - developers
+      summary: get the sensors by their IATA code
+      description: By passing in the appropriate options, you can get Sensors info
+      operationId: GetSensorDataByIata
+      parameters:
+        - name: AirportId
+          in: path
+          description: pass a iata code
+          required: true
+          style: simple
+          explode: true
+          schema:
+            maximum: 1
+            minimum: 1
+            type: string
+      responses:
+        '200':
+          description: Sensors item
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/SensorsData'
+        '400':
+          description: bad input parameter
+  /sensors-measure:
+    get:
+      tags:
+        - developers
+      summary: get the sensors by their type of measure
+      description: By passing in the appropriate options, you can get Sensors info
+      operationId: GetSensorByMeasure
+      parameters:
+        - name: Measure
+          in: query
+          description: Measure.
+          required: true
+          explode: true
+          schema:
+            maximum: 1
+            minimum: 1
+            type: string
+      responses:
+        '200':
+          description: Sensors item
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/SensorsData'
+        '400':
+          description: bad input parameter
+  /time:
+    get:
+      tags:
+        - developers
+      summary: get the sensor between two times and his type of measure
+      description: By passing in the appropriate options, you can get Sensors info
+      operationId: GetSensorByTime
+      parameters:
+        - name: Measure
+          in: query
+          description: Measure.
+          required: true
+          explode: true
+          schema:
+            maximum: 1
+            minimum: 1
+            type: string
+        - name: timebefore
+          in: query
+          description: start interval
+          required: true
+          explode: true
+          schema:
+            maximum: 1
+            minimum: 1
+            type: string
+        - name: timeafter
+          in: query
+          description: end interval
+          required: true
+          explode: true
+          schema:
+            maximum: 1
+            minimum: 1
+            type: string
+      responses:
+        '200':
+          description: Sensors item
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/SensorsData'
+        '400':
+          description: bad input paramete
+  /average:
+    get:
+      tags:
+        - developers
+      summary: get the average for all type of measure for a day given
+      description: By passing in the appropriate options, you can get average for all type of Measure for a day given
+      operationId: GetAverage
+      parameters:
+        - name: date
+          in: query
+          description: Day
+          required: true
+          explode: true
+          schema:
+            maximum: 1
+            minimum: 1
+            type: string
+      responses:
+        '200':
+          description: Sensors item
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/SensorDataAverage'
+        '400':
+          description: bad input parameter
+components:
+  schemas:
+    SensorData:
+      required:
+        - ID
+        - AirportId
+        - Measure
+        - Value
+        - Timestamp
+      type: object
+      properties:
+        ID:
+          type: integer
+          example: 1
+        AirportId:
+          type: string
+          example: NTE
+        Measure:
+          type: string
+          example: Temperature
+        Value:
+          type: number
+          example: 25.80
+        Timestamp:
+          type: string
+          example: 2022-01-10T18':07:01.9930788+01:00
+    SensorDataAverage:
+      required:
+        - AverageWind
+        - AveragePressure
+        - AverageTemp
+      type: object
+      properties:
+        AverageWind:
+          type: number
+          example: 25
+        AveragePressure:
+          type: number
+          example: 1200
+        AverageTemp:
+          type: number
+          example: 28.35
+    SensorsData:
+      type: array
+      items:
+        $ref: '#/components/schemas/SensorData'
+      example:
+        - ID: 1
+          AirportId: NTE
+          Measure: Temperature
+          Value: 25.80
+          Timestamp: 2022-01-10T18':07:01.9930788+01:00
+        - ID: 2
+          AirportId: PTP
+          Measure: Atmospheric pressure
+          Value: 1019
+          Timestamp: 2022-01-10T18':07:01.9930788+01:00

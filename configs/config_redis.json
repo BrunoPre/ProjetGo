@@ -1,0 +1,14 @@
+{
+    "dao" : {
+        "daoType": "redis",
+        "RedisAddr": "localhost:6379",
+        "RedisPwd": "",
+        "RedisDb": 0
+    },
+    "mqttConf": {
+        "brokerAddr":"localhost",
+        "brokerPort":1883,
+        "qosLevel":0,
+        "clientName": "redis-sub"
+    }
+}

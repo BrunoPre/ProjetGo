@@ -51,17 +51,17 @@ func GenData(currentTime time.Time) float64 {
 }
 
 func CourbeTemperature(x float64) float64 {
-	x = x / 60
+	x = x / 3600
 	return 3.5*math.Cos(math.Pi/12*x+2.7) + 0.02*math.Cos(4*math.Pi*x) + 0.5*math.Cos(0.5*math.Pi*x) + 8
 }
 
 func CourbePression(x float64) float64 {
-	x = x / 60
+	x = x / 6300
 	return 2*math.Cos(math.Pi/12*x+2.7) + 0.03*math.Cos(6*math.Pi*x) + 0.2*math.Cos(0.5*math.Pi*x) + 1013
 }
 
 func CourbeVent(x float64) float64 {
-	x = x / 60
+	x = x / 3600
 	y := 0.00
 
 	for i := 0; i < 60; i++ {

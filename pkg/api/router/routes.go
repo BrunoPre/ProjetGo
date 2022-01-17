@@ -17,18 +17,18 @@ type Route struct {
 type Routes []Route
 
 var routes = Routes{
-	//Route{
-	//	"Index",
-	//	"GET",
-	//	"/",
-	//	Index,
-	//},
-	//Route{
-	//	"GetSensors",
-	//	"GET",
-	//	"/sensors",
-	//	GetSensors,
-	//},
+	Route{
+		"Index",
+		"GET",
+		"/",
+		Index,
+	},
+	Route{
+		"GetSensors",
+		"GET",
+		"/sensors",
+		GetSensors,
+	},
 	Route{
 		"PostSensor",
 		"POST",
@@ -41,28 +41,28 @@ var routes = Routes{
 		"/sensors/:id",
 		GetSensor,
 	},
-	//Route{
-	//	"GetSensorDataByIata",
-	//	"GET",
-	//	"/sensors-iata/:airportId",
-	//	GetSensorDataByIata,
-	//},
-	//Route{
-	//	"GetSensorByMeasure",
-	//	"GET",
-	//	"/sensors-measure",
-	//	GetSensorByMeasure,
-	//},
-	//Route{
-	//	"GetSensorByTime",
-	//	"GET",
-	//	"/time",
-	//	GetSensorByTime,
-	//},
-	//Route{
-	//	"GetAverage",
-	//	"GET",
-	//	"/average",
-	//	GetAverage,
-	//},
+	Route{
+		"GetSensorDataByIata",
+		"GET",
+		"/sensors-iata/:airportId",
+		GetSensorDataByIata,
+	},
+	Route{
+		"GetSensorByMeasure",
+		"GET",
+		"/sensors-measure",
+		GetSensorByMeasure,
+	},
+	Route{
+		"GetSensorByTime",
+		"GET",
+		"/time",
+		GetSensorByTime,
+	},
+	Route{
+		"GetAverage",
+		"GET",
+		"/average",
+		GetAverage,
+	},
 }
